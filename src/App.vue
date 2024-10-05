@@ -67,29 +67,45 @@ class News {
 
 const news = ref(new News())
 
-async function fetchNews(): void {
-  try {
-    const response = await fetch('https://api.allorigins.win/raw?url=https%3A//rsshub.app/telegram/channel/rlsred/showLinkPreview%3D0%26showViaBot%3D0%26showReplyTo%3D0%26showFwdFrom%3D0%26showFwdFromAuthor%3D0%26showInlineButtons%3D0%26showMediaTagInTitle%3D0%26showMediaTagAsEmoji%3D0%26includeFwd%3D0%26includeReply%3D0%26includeServiceMsg%3D0%26includeUnsupportedMsg%3D0%3Flimit%3D2%26format%3Djson&callback=?')
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function fetchNews(): Promise<void> {
+  const maxRetries = 3
+  let retries = 0
+
+  while (retries < maxRetries) {
+    try {
+      const response = await fetch('https://api.allorigins.win/raw?url=https%3A//rsshub.pseudoyu.com/telegram/channel/rlsred/showLinkPreview%3D0%26showViaBot%3D0%26showReplyTo%3D0%26showFwdFrom%3D0%26showFwdFromAuthor%3D0%26showInlineButtons%3D0%26showMediaTagInTitle%3D0%26showMediaTagAsEmoji%3D0%26includeFwd%3D0%26includeReply%3D0%26includeServiceMsg%3D0%26includeUnsupportedMsg%3D0%3Flimit%3D2%26format%3Djson&callback=?')
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+
+      news.value.channel.name = data.title
+      news.value.channel.avatarUrl = data.icon
+      news.value.channel.link = data.home_page_url
+
+      news.value.articles = data.items.map((item: any) => {
+        const article = new NewsArticle()
+        article.content = item.content_html
+        article.date = new Date(item.date_published)
+        return article
+      })
+
+      newsLoaded.value = true
+      return
+    } catch (error) {
+      console.error(`News load error (attempt ${retries + 1}):`, error)
+      retries++
+      if (retries < maxRetries) {
+        await sleep(300)
+      } else {
+        console.error('Max retries reached. Failed to load news.')
+      }
     }
-
-    const data = await response.json()
-
-    news.value.channel.name = data.title
-    news.value.channel.avatarUrl = data.icon
-    news.value.channel.link = data.home_page_url
-
-    news.value.articles = data.items.map((item: any) => {
-      const article = new NewsArticle()
-      article.content = item.content_html
-      article.date = new Date(item.date_published)
-      return article
-    })
-
-    newsLoaded.value = true
-  } catch (error) {
-    console.error('News load error:', error)
   }
 }
 
