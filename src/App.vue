@@ -47,12 +47,12 @@ import selfGraphLogoUrl from "@/assets/selfgraph.png"
 const videoLoaded = ref(false);
 
 const personalInfo = ref({
-  name: 'Lane Shukhov',
+  name: 'name',
   avatar: avatarUrl,
   videoAvatar: videoAvatarUrl,
   descriptions: [
-    'Backend и немного Frontend разработчик. DevOps тоже умею, чуть-чуть занимаюсь дизайном. В общем, ни на что не претендующий Fullstack ☺️',
-    'Также увлекаюсь музыкой, фотографией, учусь рисовать и состою в furry/brony фэндоме.'
+    'description1',
+    'description2'
   ],
   initials: 'LS'
 })
@@ -64,15 +64,15 @@ const socialLinks = ref([
 
 const projects = ref([
   {
-    name: 'Этот сайт',
+    name: 'thisWebsite',
     logo: rlsIconUrl,
-    descriptions: ['Простенький сайт визитка, собранный за несколько часов.'],
+    descriptions: ['thisWebsiteDescription'],
     technologies: ['Vue', 'Vite', 'TypeScript', 'Tailwind CSS', 'shadcn/ui', 'i18n']
   },
   {
     name: 'Nextube Donations',
     logo: nextubeDonationLogoUrl,
-    descriptions: ['MVP системы сбора донатов (аналог Boosty, Patreon).'],
+    descriptions: ['nextubeDonationsDescription'],
     technologies: ['Vue', 'Vite', 'TypeScript', 'Ionic', 'i18n', 'PHP', 'Nginx', 'OpenAPI', 'MySQL', 'Docker', 'Redis'],
     link: 'https://d.nextube.ru',
   },
@@ -80,26 +80,26 @@ const projects = ref([
     name: 'Syberia OS',
     logo: syberiaOSLogoUrl,
     descriptions: [
-      'Участвую в проекте в роли дизайнера и веб-разработчика.',
-      'Создал логотип, несколько boot-анимаций и обоев.',
-      'Также сделал сайт с каталогом поддерживаемых устройств и системой для поддержки OTA обновлений Android. Сам сайт сделан в далеком 2018 году и является жестким легаси. Делал я его, будучи совсем зеленым джуном, поэтому код там просто ужасный, так делать нельзя.', 
-      'Но, тем не менее, сайт бесперебойно работает уже более 6 лет 😉'
+      'syberiaOSDescription1',
+      'syberiaOSDescription2',
+      'syberiaOSDescription3',
+      'syberiaOSDescription4'
     ],
     technologies: ['Android (AOSP)', 'Photoshop', 'Illustrator', 'After Effects', 'PHP', 'FatFree', 'Nginx'],
     link: 'https://syberiaos.com',
     githubs: [
-      {title: 'Сайт', link: 'https://github.com/syberia-project/syberia_website', icon: iconTypes.Globe},
-      {title: 'Дизайн', link: 'https://github.com/syberia-project/brand', icon: iconTypes.Image},
-      {title: 'Общий', link: 'https://github.com/syberia-project', icon: iconTypes.Home},
+      {title: 'website', link: 'https://github.com/syberia-project/syberia_website', icon: iconTypes.Globe},
+      {title: 'design', link: 'https://github.com/syberia-project/brand', icon: iconTypes.Image},
+      {title: 'general', link: 'https://github.com/syberia-project', icon: iconTypes.Home},
     ]
   },
   {
     name: 'Self Graph',
     logo: selfGraphLogoUrl,
     descriptions: [
-      'Проект создан как полигон для изучения новых для меня технологий.',
-      'Он представляет собой Ready-to-Use Vue3 компонент c текстовым WYSIWYG редактором и self-hosted сервис-аналог telegra.ph для демонстрации работы с этим компонентом.',
-      'Проект не доведен до ума, когда-нибудь я его доделаю 😔',
+      'selfGraphDescription1',
+      'selfGraphDescription2',
+      'selfGraphDescription3',
     ],
     technologies: ['Vue', 'Vite', 'TypeScript', 'Tailwind CSS', 'shadcn/ui', 'i18n', 'TipTap', 'Supabase', 'PostgreSQL'],
     github: 'https://github.com/selfgraph',
@@ -115,7 +115,7 @@ const projects = ref([
       <CardHeader>
         <div class="flex flex-col items-center sm:flex-row sm:items-start gap-6">
           <Avatar class="w-24 h-24 sm:w-32 sm:h-32">
-            <AvatarImage v-if="!videoLoaded" :src="personalInfo.avatar" :alt="personalInfo.name"/>
+            <AvatarImage v-if="!videoLoaded" :src="personalInfo.avatar" :alt="$t(personalInfo.name)"/>
             <video
                 v-show="videoLoaded"
                 class="w-24 h-24 sm:w-32 sm:h-32 object-cover"
@@ -135,14 +135,14 @@ const projects = ref([
                 <Popover>
                   <PopoverTrigger as-child>
                     <Button variant="link" class="text-2xl sm:text-3xl font-bold p-0 mb-0 underline decoration-dashed decoration-muted">
-                      {{ personalInfo.name }}
+                      {{ $t(personalInfo.name) }}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-48">
                     <div class="grid gap-4">
                       <div class="space-y-2">
                         <h4 class="font-medium leading-none">
-                          Так же известен как
+                          {{ $t('alsoKnownAs') }}
                         </h4>
                         <ul class="text-sm text-muted-foreground list-disc list-inside">
                           <li>rls</li>
@@ -156,8 +156,9 @@ const projects = ref([
                 </Popover>
               </CardTitle>
               <CardDescription class="text-base sm:text-lg mb-4">
-                <p v-for="(description, index) in personalInfo.descriptions" :class="{ 'pt-3': index > 0 }">
-                  {{ description }}</p>
+                <p v-for="(description, index) in personalInfo.descriptions" :key="index" :class="{ 'pt-3': index > 0 }">
+                  {{ $t(description) }}
+                </p>
               </CardDescription>
             </div>
             <div class="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4 w-full">
@@ -177,15 +178,15 @@ const projects = ref([
       </CardHeader>
     </Card>
 
-    <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Проекты</h2>
+    <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">{{ $t('projects') }}</h2>
     <div class="space-y-6">
       <Card v-for="project in projects" :key="project.name" class="flex flex-col">
         <CardHeader class="flex flex-row items-center gap-4">
           <Avatar class="w-12 h-12 sm:w-16 sm:h-16">
-            <AvatarImage :src="project.logo" :alt="project.name"/>
-            <AvatarFallback>{{ project.name[0] }}</AvatarFallback>
+            <AvatarImage :src="project.logo" :alt="$t(project.name)"/>
+            <AvatarFallback>{{ $t(project.name)[0] }}</AvatarFallback>
           </Avatar>
-          <CardTitle class="text-lg sm:text-xl" :class="{'text-muted-foreground': project.isWorkInProcess}">{{ project.name }}</CardTitle>
+          <CardTitle class="text-lg sm:text-xl" :class="{'text-muted-foreground': project.isWorkInProcess}">{{ $t(project.name) }}</CardTitle>
           <div v-if="project.link || project.githubs || project.github || project.isWorkInProcess" class="ml-auto flex-none">
             <Button v-if="project.link" variant="outline" asChild class="text-sm sm:text-base mx-1" size="icon">
               <a :href="project.link" target="_blank" rel="noopener noreferrer">
@@ -203,10 +204,10 @@ const projects = ref([
                 <div class="grid gap-4">
                   <div class="space-y-2">
                     <h4 class="font-medium leading-none">
-                      В процессе
+                      {{ $t('inProgress') }}
                     </h4>
                     <p class="text-sm text-muted-foreground">
-                      Данный проект не завершен
+                      {{ $t('projectNotCompleted') }}
                     </p>
                   </div>
                 </div>
@@ -227,7 +228,7 @@ const projects = ref([
                     <ImageIcon v-if="github.icon === iconTypes.Image"/>
                     <HomeIcon v-if="github.icon === iconTypes.Home"/>
                     &nbsp;
-                    {{ github.title }}
+                    {{ $t(github.title) }}
                   </a>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -242,7 +243,7 @@ const projects = ref([
         </CardHeader>
         <CardContent>
           <CardDescription class="text-sm sm:text-base mb-3">
-            <p v-for="(description, index) in project.descriptions" :class="{ 'pt-3': index > 0 }">{{ description }}</p>
+            <p v-for="(description, index) in project.descriptions" :key="index" :class="{ 'pt-3': index > 0 }">{{ $t(description) }}</p>
           </CardDescription>
           <div class="flex flex-wrap gap-2 pt-3">
             <Badge v-for="tech in project.technologies" :key="tech" variant="secondary" class="text-xs">
