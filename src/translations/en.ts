@@ -20,5 +20,6 @@ export default {
     'design': 'Design',
     'general': 'General',
     'inProgress': 'In progress',
-    'projectNotCompleted': 'This project is not completed'
+    'projectNotCompleted': 'This project is not completed',
+    'news': 'News',
 }

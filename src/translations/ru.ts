@@ -20,5 +20,6 @@ export default {
     'design': 'Дизайн',
     'general': 'Общий',
     'inProgress': 'В процессе',
-    'projectNotCompleted': 'Данный проект не завершён'
+    'projectNotCompleted': 'Данный проект не завершён',
+    'news': 'Новости',
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {
   Card,
   CardContent,
@@ -17,7 +17,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import {GlobeIcon, ExternalLinkIcon, ImageIcon, HomeIcon, EyeNoneIcon} from "@radix-icons/vue"
+import {GlobeIcon, ExternalLinkIcon, ImageIcon, HomeIcon, EyeNoneIcon, CalendarIcon} from "@radix-icons/vue"
+import {Separator} from '@/components/ui/separator'
+import {Skeleton} from '@/components/ui/skeleton'
+
+import sanitizeHtml from 'sanitize-html'
 
 import avatarUrl from '@/assets/rls.jpeg'
 import videoAvatarUrl from '@/assets/rls.mp4'
@@ -43,6 +47,55 @@ enum iconTypes {
 }
 
 const videoLoaded = ref(false);
+const newsLoaded = ref(false);
+
+class Channel {
+  public name: string = ''
+  public avatarUrl: string = ''
+  public link: string = ''
+}
+
+class NewsArticle {
+  public content: string = ''
+  public date: Date = null
+}
+
+class News {
+  public channel: channel = new Channel()
+  public articles: NewsArticle[] = []
+}
+
+const news = ref(new News())
+
+async function fetchNews(): void {
+  try {
+    const response = await fetch('https://api.allorigins.win/raw?url=https%3A//rsshub.app/telegram/channel/rlsred/showLinkPreview%3D0%26showViaBot%3D0%26showReplyTo%3D0%26showFwdFrom%3D0%26showFwdFromAuthor%3D0%26showInlineButtons%3D0%26showMediaTagInTitle%3D0%26showMediaTagAsEmoji%3D0%26includeFwd%3D0%26includeReply%3D0%26includeServiceMsg%3D0%26includeUnsupportedMsg%3D0%3Flimit%3D2%26format%3Djson&callback=?')
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+
+    const data = await response.json()
+
+    news.value.channel.name = data.title
+    news.value.channel.avatarUrl = data.icon
+    news.value.channel.link = data.home_page_url
+
+    news.value.articles = data.items.map((item: any) => {
+      const article = new NewsArticle()
+      article.content = item.content_html
+      article.date = new Date(item.date_published)
+      return article
+    })
+
+    newsLoaded.value = true
+  } catch (error) {
+    console.error('News load error:', error)
+  }
+}
+
+onMounted(() => {
+  fetchNews()
+})
 
 const personalInfo = ref({
   name: 'name',
@@ -193,8 +246,79 @@ const projects = ref([
     </header>
 
     <main>
-      <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">{{ $t('projects') }}</h2>
       <section>
+        <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">{{ $t('news') }}</h2>
+        <div class="space-y-6 mb-8">
+          <Card class="flex flex-col">
+            <CardHeader class="flex flex-row items-center gap-4">
+              <Avatar v-if="newsLoaded" class="w-12 h-12 sm:w-16 sm:h-16">
+                <AvatarImage :src="news.channel.avatarUrl" :alt="news.channel.name"/>
+                <AvatarFallback>{{ news.channel.name }}</AvatarFallback>
+              </Avatar>
+              <Skeleton v-else class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"/>
+
+              <CardTitle class="text-lg sm:text-xl">
+                <h3 v-if="newsLoaded">{{ news.channel.name }}</h3>
+                <Skeleton v-else class="h-4 w-[100px]"/>
+              </CardTitle>
+              <div class="ml-auto flex-none">
+                <Button v-if="newsLoaded" variant="outline" asChild class="text-sm sm:text-base mx-1" size="icon">
+                  <a :href="news.channel.link" target="_blank" rel="noopener noreferrer">
+                    <telegramIcon/>
+                  </a>
+                </Button>
+                <Skeleton v-else class="w-8 h-8 rounded-md mx-1"/>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription v-if="newsLoaded" class="text-sm sm:text-base mb-3 flex flex-col space-y-4">
+                <div v-for="(article, index) in news.articles" class="space-y-4">
+                  <article>
+                    <div class="flex flex-row relative text-sm min-h-6 [&>img]:w-12 [&>img]:h-12 [&>img]:object-cover [&>img]:rounded-md [&>img]:absolute [&>img]:right-0" v-html="
+                        sanitizeHtml(article.content, {
+                          allowedTags: ['br', 'img', 'p'],
+                          allowedAttributes: {
+                            'img': ['src', 'alt']
+                          }
+                        })
+                      "></div>
+                    <div class="flex items-center pt-2">
+                      <CalendarIcon class="mr-2 h-4 w-4 opacity-70"/>
+                      <span class="text-xs text-muted-foreground">
+                        {{ article.date.toLocaleString() }}
+                      </span>
+                    </div>
+                  </article>
+
+                  <Separator v-if="index < news.articles.length-1"/>
+                </div>
+              </CardDescription>
+
+              <CardDescription v-else class="text-sm sm:text-base mb-3 flex flex-col space-y-4">
+                <div>
+                  <Skeleton class="h-4 w-2/3"/>
+                  <div class="flex items-center pt-2">
+                    <Skeleton class="h-4 w-1/5"/>
+                  </div>
+                </div>
+
+                <Separator/>
+
+                <div>
+                  <Skeleton class="h-4 w-3/4"/>
+                  <div class="flex items-center pt-2">
+                    <Skeleton class="h-4 w-1/4"/>
+                  </div>
+                </div>
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">{{ $t('projects') }}</h2>
+
         <article class="space-y-6">
           <Card v-for="project in projects" :key="project.name" class="flex flex-col">
             <CardHeader class="flex flex-row items-center gap-4">
