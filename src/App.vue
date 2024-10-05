@@ -43,6 +43,7 @@ import rlsIconUrl from "@/assets/rls.svg?url"
 import nextubeDonationLogoUrl from "@/assets/nextube_donations.png"
 import syberiaOSLogoUrl from "@/assets/syberia.svg?url"
 import selfGraphLogoUrl from "@/assets/selfgraph.png"
+import painIconUrl from "@/assets/icons/paint.svg?url"
 
 const videoLoaded = ref(false);
 
@@ -67,7 +68,8 @@ const projects = ref([
     name: 'thisWebsite',
     logo: rlsIconUrl,
     descriptions: ['thisWebsiteDescription'],
-    technologies: ['Vue', 'Vite', 'TypeScript', 'Tailwind CSS', 'shadcn/ui', 'i18n']
+    technologies: ['Vue', 'Vite', 'TypeScript', 'Tailwind CSS', 'shadcn/ui', 'i18n'],
+    github: 'https://github.com/rlshukhov/rls.red'
   },
   {
     name: 'Nextube Donations',
@@ -85,7 +87,7 @@ const projects = ref([
       'syberiaOSDescription3',
       'syberiaOSDescription4'
     ],
-    technologies: ['Android (AOSP)', 'Photoshop', 'Illustrator', 'After Effects', 'PHP', 'FatFree', 'Nginx'],
+    technologies: ['Android (AOSP)', 'Photoshop', 'Illustrator', 'After Effects', 'PHP', 'FatFree', 'Bootstrap', 'Nginx'],
     link: 'https://syberiaos.com',
     githubs: [
       {title: 'website', link: 'https://github.com/syberia-project/syberia_website', icon: iconTypes.Globe},
@@ -105,10 +107,21 @@ const projects = ref([
     github: 'https://github.com/selfgraph',
     isWorkInProcess: true,
   },
+  {
+    name: 'tgquotebot',
+    logo: painIconUrl,
+    descriptions: [
+      'tgquotebotDescription1',
+      'tgquotebotDescription2',
+    ],
+    technologies: ['Golang', 'Docker', 'Selenium'],
+    github: 'https://github.com/rlshukhov/tgquotebot',
+  },
 ])
 </script>
 
 <template>
+  <div class="background"></div>
   <div class="container mx-auto px-4 py-8 max-w-2xl min-w-80">
 
     <Card class="mb-8">
@@ -134,7 +147,8 @@ const projects = ref([
               <CardTitle class="text-2xl sm:text-3xl font-bold mb-2">
                 <Popover>
                   <PopoverTrigger as-child>
-                    <Button variant="link" class="text-2xl sm:text-3xl font-bold p-0 mb-0 underline decoration-dashed decoration-muted">
+                    <Button variant="link"
+                            class="text-2xl sm:text-3xl font-bold p-0 mb-0 underline decoration-dashed decoration-muted">
                       {{ $t(personalInfo.name) }}
                     </Button>
                   </PopoverTrigger>
@@ -156,7 +170,8 @@ const projects = ref([
                 </Popover>
               </CardTitle>
               <CardDescription class="text-base sm:text-lg mb-4">
-                <p v-for="(description, index) in personalInfo.descriptions" :key="index" :class="{ 'pt-3': index > 0 }">
+                <p v-for="(description, index) in personalInfo.descriptions" :key="index"
+                   :class="{ 'pt-3': index > 0 }">
                   {{ $t(description) }}
                 </p>
               </CardDescription>
@@ -186,8 +201,11 @@ const projects = ref([
             <AvatarImage :src="project.logo" :alt="$t(project.name)"/>
             <AvatarFallback>{{ $t(project.name)[0] }}</AvatarFallback>
           </Avatar>
-          <CardTitle class="text-lg sm:text-xl" :class="{'text-muted-foreground': project.isWorkInProcess}">{{ $t(project.name) }}</CardTitle>
-          <div v-if="project.link || project.githubs || project.github || project.isWorkInProcess" class="ml-auto flex-none">
+          <CardTitle class="text-lg sm:text-xl" :class="{'text-muted-foreground': project.isWorkInProcess}">
+            {{ $t(project.name) }}
+          </CardTitle>
+          <div v-if="project.link || project.githubs || project.github || project.isWorkInProcess"
+               class="ml-auto flex-none">
             <Button v-if="project.link" variant="outline" asChild class="text-sm sm:text-base mx-1" size="icon">
               <a :href="project.link" target="_blank" rel="noopener noreferrer">
                 <ExternalLinkIcon/>
@@ -196,7 +214,8 @@ const projects = ref([
 
             <Popover>
               <PopoverTrigger as-child>
-                <Button v-if="project.isWorkInProcess" variant="outline" class="text-sm sm:text-base mx-1" size="icon">
+                <Button v-if="project.isWorkInProcess" variant="outline" class="text-sm sm:text-base mx-1"
+                        size="icon">
                   <EyeNoneIcon/>
                 </Button>
               </PopoverTrigger>
@@ -243,7 +262,8 @@ const projects = ref([
         </CardHeader>
         <CardContent>
           <CardDescription class="text-sm sm:text-base mb-3">
-            <p v-for="(description, index) in project.descriptions" :key="index" :class="{ 'pt-3': index > 0 }">{{ $t(description) }}</p>
+            <p v-for="(description, index) in project.descriptions" :key="index" :class="{ 'pt-3': index > 0 }">
+              {{ $t(description) }}</p>
           </CardDescription>
           <div class="flex flex-wrap gap-2 pt-3">
             <Badge v-for="tech in project.technologies" :key="tech" variant="secondary" class="text-xs">
@@ -255,3 +275,46 @@ const projects = ref([
     </div>
   </div>
 </template>
+
+<style scoped>
+.background {
+  position: fixed;
+  overflow: hidden;
+  min-height: 100vh;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.background::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image:
+      radial-gradient(at top left, #394e7a, transparent 40%),
+      radial-gradient(at top right, #8e9ac7, transparent 40%),
+      radial-gradient(at bottom left, #4ee, transparent 40%);
+  animation: morphGradient 30s infinite alternate;
+  z-index: -1;
+}
+
+@keyframes morphGradient {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.5);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+</style>
