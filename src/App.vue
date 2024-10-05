@@ -17,16 +17,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-
 import {GlobeIcon, ExternalLinkIcon, ImageIcon, HomeIcon, EyeNoneIcon} from "@radix-icons/vue"
-
-const mode = useColorMode()
 
 import avatarUrl from '@/assets/rls.jpeg'
 import videoAvatarUrl from '@/assets/rls.mp4'
-
 import githubIcon from "@/assets/icons/github.svg"
 import telegramIcon from "@/assets/icons/telegram.svg"
+import rlsIconUrl from "@/assets/rls.svg?url"
+import nextubeDonationLogoUrl from "@/assets/nextube_donations.png"
+import syberiaOSLogoUrl from "@/assets/syberia.svg?url"
+import selfGraphLogoUrl from "@/assets/selfgraph.png"
+import painIconUrl from "@/assets/icons/paint.svg?url"
+
+const mode = useColorMode()
 
 enum socialLinkTypes {
   Github,
@@ -38,12 +41,6 @@ enum iconTypes {
   Image,
   Home,
 }
-
-import rlsIconUrl from "@/assets/rls.svg?url"
-import nextubeDonationLogoUrl from "@/assets/nextube_donations.png"
-import syberiaOSLogoUrl from "@/assets/syberia.svg?url"
-import selfGraphLogoUrl from "@/assets/selfgraph.png"
-import painIconUrl from "@/assets/icons/paint.svg?url"
 
 const videoLoaded = ref(false);
 

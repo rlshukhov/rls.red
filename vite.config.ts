@@ -20,4 +20,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  ssr: {
+    // SSG Vue-i18n workaround
+    noExternal: [/vue-i18n/],
+  }
 })
