@@ -5,6 +5,8 @@ import vue from '@vitejs/plugin-vue'
 import tailwind from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
+import svgLoader from 'vite-svg-loader'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -12,7 +14,7 @@ export default defineConfig({
       plugins: [tailwind(), autoprefixer()],
     },
   },
-  plugins: [vue()],
+  plugins: [vue(), svgLoader()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
