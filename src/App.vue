@@ -32,6 +32,7 @@ import nextubeDonationLogoUrl from "@/assets/nextube_donations.png"
 import syberiaOSLogoUrl from "@/assets/syberia.svg?url"
 import selfGraphLogoUrl from "@/assets/selfgraph.png"
 import painIconUrl from "@/assets/icons/paint.svg?url"
+import ReadMore from "@/components/ReadMore.vue";
 
 const mode = useColorMode()
 
@@ -77,7 +78,7 @@ async function fetchNews(): Promise<void> {
 
   while (retries < maxRetries) {
     try {
-      const response = await fetch('https://api.allorigins.win/raw?url=https%3A//rsshub.pseudoyu.com/telegram/channel/rlsred/showLinkPreview%3D0%26showViaBot%3D0%26showReplyTo%3D0%26showFwdFrom%3D0%26showFwdFromAuthor%3D0%26showInlineButtons%3D0%26showMediaTagInTitle%3D0%26showMediaTagAsEmoji%3D0%26includeFwd%3D0%26includeReply%3D0%26includeServiceMsg%3D0%26includeUnsupportedMsg%3D0%3Flimit%3D2%26format%3Djson&callback=?')
+      const response = await fetch('https://api.allorigins.win/raw?url=https%3A//rsshub.pseudoyu.com/telegram/channel/rlsred/showLinkPreview%3D0%26showViaBot%3D0%26showReplyTo%3D0%26showFwdFrom%3D0%26showFwdFromAuthor%3D0%26showInlineButtons%3D0%26showMediaTagInTitle%3D0%26showMediaTagAsEmoji%3D0%26includeFwd%3D0%26includeReply%3D0%26includeServiceMsg%3D0%26includeUnsupportedMsg%3D0%3Flimit%3D5%26format%3Djson&callback=?')
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -90,10 +91,15 @@ async function fetchNews(): Promise<void> {
 
       news.value.articles = data.items.map((item: any) => {
         const article = new NewsArticle()
-        article.content = item.content_html
+        article.content = sanitizeHtml(item.content_html, {
+          allowedTags: ['br', 'p', 'a'],
+          allowedAttributes: {
+            'a': ['href', 'target'],
+          }
+        })
         article.date = new Date(item.date_published)
         return article
-      })
+      }).filter(article => article.content.length > 50).slice(0, 2)
 
       newsLoaded.value = true
       return
@@ -104,6 +110,10 @@ async function fetchNews(): Promise<void> {
         await sleep(300)
       } else {
         console.error('Max retries reached. Failed to load news.')
+
+        news.value.channel.name = 'rls.red - Telegram Channel'
+        news.value.channel.link = 'https://t.me/s/rlsred'
+        newsLoaded.value = true
       }
     }
   }
@@ -269,7 +279,7 @@ const projects = ref([
             <CardHeader class="flex flex-row items-center gap-4">
               <Avatar v-if="newsLoaded" class="w-12 h-12 sm:w-16 sm:h-16">
                 <AvatarImage :src="news.channel.avatarUrl" :alt="news.channel.name"/>
-                <AvatarFallback>{{ news.channel.name }}</AvatarFallback>
+                <AvatarFallback>{{ news.channel.name.slice(0 ,2).toUpperCase() }}</AvatarFallback>
               </Avatar>
               <Skeleton v-else class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"/>
 
@@ -286,19 +296,14 @@ const projects = ref([
                 <Skeleton v-else class="w-8 h-8 rounded-md mx-1"/>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent v-if="!newsLoaded || (newsLoaded && news.articles.length > 0)">
               <CardDescription v-if="newsLoaded" class="text-sm sm:text-base mb-3 flex flex-col space-y-4">
                 <div v-for="(article, index) in news.articles" class="space-y-4">
                   <article>
-                    <div class="flex flex-row relative text-sm min-h-6 [&>img]:w-12 [&>img]:h-12 [&>img]:object-cover [&>img]:rounded-md [&>img]:absolute [&>img]:right-0" v-html="
-                        sanitizeHtml(article.content, {
-                          allowedTags: ['br', 'img', 'p'],
-                          allowedAttributes: {
-                            'img': ['src', 'alt']
-                          }
-                        })
-                      "></div>
-                    <div class="flex items-center pt-2">
+                    <ReadMore :text-more="$t('readMore')" :text-less="$t('readLess')">
+                      <div class="flex flex-row relative text-sm sm:text-base min-h-6 [&>p>a]:underline [&>p]:w-full" v-html="article.content"></div>
+                    </ReadMore>
+                    <div class="flex items-center pt-4">
                       <CalendarIcon class="mr-2 h-4 w-4 opacity-70"/>
                       <span class="text-xs text-muted-foreground">
                         {{ article.date.toLocaleString() }}
@@ -340,7 +345,7 @@ const projects = ref([
             <CardHeader class="flex flex-row items-center gap-4">
               <Avatar class="w-12 h-12 sm:w-16 sm:h-16">
                 <AvatarImage :src="project.logo" :alt="$t(project.name)"/>
-                <AvatarFallback>{{ $t(project.name)[0] }}</AvatarFallback>
+                <AvatarFallback>{{ $t(project.name).slice(0 ,2).toUpperCase() }}</AvatarFallback>
               </Avatar>
               <CardTitle class="text-lg sm:text-xl" :class="{'text-muted-foreground': project.isWorkInProcess}">
                 <h3>{{ $t(project.name) }}</h3>

@@ -22,4 +22,6 @@ export default {
     'inProgress': 'В процессе',
     'projectNotCompleted': 'Данный проект не завершён',
     'news': 'Новости',
+    'readMore': 'Читать дальше',
+    'readLess': 'Свернуть',
 }

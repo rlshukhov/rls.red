@@ -22,4 +22,6 @@ export default {
     'inProgress': 'In progress',
     'projectNotCompleted': 'This project is not completed',
     'news': 'News',
+    'readMore': 'Read more',
+    'readLess': 'Collapse',
 }
